@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:867123620650:android:307078e2badf56be370c53",
+        "mobilesdk_app_id": "1:867123620650:android:4a35caa5465da99b370c53",
         "android_client_info": {
-          "package_name": "com.dutisoft"
+          "package_name": "com.dutisoft.ommmm"
         }
       },
       "oauth_client": [],
