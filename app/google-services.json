@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "867123620650",
+    "project_id": "ommmm-137c9",
+    "storage_bucket": "ommmm-137c9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867123620650:android:307078e2badf56be370c53",
+        "android_client_info": {
+          "package_name": "com.dutisoft"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEQtUWbPv_d1WVbDUh-GDhtmhCmd-nvsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
