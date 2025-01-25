@@ -1,5 +1,6 @@
 package com.dutisoft.ommmm
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Toast
@@ -14,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import com.airbnb.lottie.compose.*
 import com.dutisoft.ommmm.ui.theme.OmmmmTheme
 
 class MeditationActivity : ComponentActivity() {
@@ -41,6 +40,16 @@ fun MeditationScreen() {
         mutableStateOf<CountDownTimer?>(null)
     }
 
+    // Reproducir el sonido al iniciar la práctica
+    fun playSound() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.tibetan_bowl)
+        mediaPlayer.start()
+        mediaPlayer.setOnCompletionListener {
+            mediaPlayer.release()  // Libera los recursos cuando termine la reproducción
+        }
+    }
+
+    // Función para iniciar el temporizador
     fun startTimer() {
         countDownTimer?.cancel()
         countDownTimer = object : CountDownTimer(timeRemaining, 1000) {
@@ -57,11 +66,13 @@ fun MeditationScreen() {
         isTimerRunning = true
     }
 
+    // Función para pausar el temporizador
     fun pauseTimer() {
         countDownTimer?.cancel()
         isTimerRunning = false
     }
 
+    // Maneja el clic para iniciar o pausar el temporizador
     fun handleClick() {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastClickTime < doubleClickThreshold) {
@@ -69,6 +80,7 @@ fun MeditationScreen() {
                 pauseTimer()
             } else {
                 startTimer()
+                playSound()  // Reproducir el sonido al iniciar
             }
         } else {
             Toast.makeText(context, "Toca dos veces para iniciar/pausar", Toast.LENGTH_SHORT).show()
@@ -76,6 +88,7 @@ fun MeditationScreen() {
         lastClickTime = currentTime
     }
 
+    // Formato de tiempo en minutos:segundos
     fun formatTime(millis: Long): String {
         val seconds = (millis / 1000).toInt()
         val minutes = seconds / 60
@@ -83,6 +96,7 @@ fun MeditationScreen() {
         return String.format("%02d:%02d", minutes, remainingSeconds)
     }
 
+    // Interfaz de usuario
     Box(modifier = Modifier.fillMaxSize().clickable { handleClick() }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
