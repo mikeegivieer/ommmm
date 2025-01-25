@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -20,7 +19,6 @@ import com.airbnb.lottie.compose.*
 import com.dutisoft.ommmm.ui.theme.OmmmmTheme
 
 class MeditationActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -37,9 +35,15 @@ fun MeditationScreen() {
     var isTimeUp by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     val doubleClickThreshold = 800L
+    val context = LocalContext.current
 
-    val countDownTimer = rememberUpdatedState(
-        object : CountDownTimer(timeRemaining, 1000) {
+    var countDownTimer by remember {
+        mutableStateOf<CountDownTimer?>(null)
+    }
+
+    fun startTimer() {
+        countDownTimer?.cancel()
+        countDownTimer = object : CountDownTimer(timeRemaining, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 timeRemaining = millisUntilFinished
             }
@@ -49,8 +53,28 @@ fun MeditationScreen() {
                 isTimerRunning = false
                 isTimeUp = true
             }
+        }.start()
+        isTimerRunning = true
+    }
+
+    fun pauseTimer() {
+        countDownTimer?.cancel()
+        isTimerRunning = false
+    }
+
+    fun handleClick() {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastClickTime < doubleClickThreshold) {
+            if (isTimerRunning) {
+                pauseTimer()
+            } else {
+                startTimer()
+            }
+        } else {
+            Toast.makeText(context, "Toca dos veces para iniciar/pausar", Toast.LENGTH_SHORT).show()
         }
-    )
+        lastClickTime = currentTime
+    }
 
     fun formatTime(millis: Long): String {
         val seconds = (millis / 1000).toInt()
@@ -59,47 +83,18 @@ fun MeditationScreen() {
         return String.format("%02d:%02d", minutes, remainingSeconds)
     }
 
-    fun handleClick() {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastClickTime < doubleClickThreshold) {
-            if (isTimerRunning) {
-                countDownTimer.value.cancel()
-                isTimerRunning = false
-            } else {
-                countDownTimer.value.start()
-                isTimerRunning = true
-            }
-        }
-        lastClickTime = currentTime
-    }
-
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.celebration))
-    val progress by animateLottieCompositionAsState(composition)
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (isTimeUp) {
-            LottieAnimation(
-                composition,
-                progress,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .align(Alignment.Center)
-                    .zIndex(-1f)
-            )
-        }
-
+    Box(modifier = Modifier.fillMaxSize().clickable { handleClick() }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { handleClick() }
+            modifier = Modifier.fillMaxSize()
         ) {
             Text(
                 text = formatTime(timeRemaining),
                 fontSize = 50.sp,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.clickable { showTimePicker = true }  // Mostrar diálogo al hacer clic
+                modifier = Modifier.clickable {
+                    if (!isTimerRunning) showTimePicker = true
+                }
             )
 
             if (showTimePicker) {
@@ -111,14 +106,6 @@ fun MeditationScreen() {
                         showTimePicker = false
                     }
                 )
-            }
-
-            if (timeRemaining == 0L && !isTimeUp) {
-                Toast.makeText(
-                    LocalContext.current,
-                    "Tiempo agotado",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         }
     }
@@ -159,7 +146,6 @@ fun TimePickerDialog(
         }
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable
