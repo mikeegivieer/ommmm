@@ -3,9 +3,10 @@ package com.dutisoft.ommmm
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -13,12 +14,13 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dutisoft.ommmm.ui.theme.OmmmmTheme
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity()  {
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +28,14 @@ class MainActivity : ComponentActivity() {
 
         // Inicializa FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance()
+
+        // Verificar si hay un usuario autenticado
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser != null) {
+            // Si el usuario está logeado, redirigir a MeditationActivity
+            navigateToMeditation()
+            return
+        }
 
         enableEdgeToEdge()
         setContent {
@@ -48,7 +58,8 @@ class MainActivity : ComponentActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                    // Aquí puedes redirigir al usuario a la pantalla principal o dashboard
+                    // Redirige a MeditationActivity después de login exitoso
+                    navigateToMeditation()
                 } else {
                     Toast.makeText(
                         this,
@@ -62,6 +73,12 @@ class MainActivity : ComponentActivity() {
     private fun navigateToRegister() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun navigateToMeditation() {
+        val intent = Intent(this, MeditationActivity::class.java)
+        startActivity(intent)
+        finish()  // Finaliza MainActivity para evitar que el usuario regrese
     }
 }
 
@@ -81,7 +98,6 @@ fun LoginForm(onLogin: (String, String) -> Unit, onNavigateToRegister: () -> Uni
     ) {
         Text(text = "Login", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
 
-        // Campo de email con validación
         TextField(
             value = email,
             onValueChange = {
@@ -93,10 +109,9 @@ fun LoginForm(onLogin: (String, String) -> Unit, onNavigateToRegister: () -> Uni
             modifier = Modifier.fillMaxWidth()
         )
         if (emailError != null) {
-            Text(text = emailError!!, color = androidx.compose.ui.graphics.Color.Red)
+            Text(text = emailError!!, color = Color.Red)
         }
 
-        // Campo de contraseña con validación
         TextField(
             value = password,
             onValueChange = {
@@ -108,10 +123,9 @@ fun LoginForm(onLogin: (String, String) -> Unit, onNavigateToRegister: () -> Uni
             modifier = Modifier.fillMaxWidth()
         )
         if (passwordError != null) {
-            Text(text = passwordError!!, color = androidx.compose.ui.graphics.Color.Red)
+            Text(text = passwordError!!, color = Color.Red)
         }
 
-        // Botón de login
         Button(
             onClick = {
                 if (emailError == null && passwordError == null && email.isNotEmpty() && password.isNotEmpty()) {
@@ -123,6 +137,15 @@ fun LoginForm(onLogin: (String, String) -> Unit, onNavigateToRegister: () -> Uni
         ) {
             Text(text = "Login")
         }
+
+        // Texto para registrar una nueva cuenta
+        Text(
+            text = "Si no tienes una cuenta, regístrate",
+            color = Color.Blue,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .clickable { onNavigateToRegister() }
+        )
     }
 }
 
