@@ -32,8 +32,8 @@ class MainActivity : AppCompatActivity()  {
         // Verificar si hay un usuario autenticado
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null) {
-            // Si el usuario está logeado, redirigir a MeditationActivity
-            navigateToMeditation()
+            // Si el usuario está logeado, redirigir a DashboardActivity
+            navigateToDashboard()
             return
         }
 
@@ -58,8 +58,8 @@ class MainActivity : AppCompatActivity()  {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                    // Redirige a MeditationActivity después de login exitoso
-                    navigateToMeditation()
+                    // Redirige a DashboardActivity después de login exitoso
+                    navigateToDashboard()
                 } else {
                     Toast.makeText(
                         this,
@@ -75,8 +75,8 @@ class MainActivity : AppCompatActivity()  {
         startActivity(intent)
     }
 
-    private fun navigateToMeditation() {
-        val intent = Intent(this, MeditationActivity::class.java)
+    private fun navigateToDashboard() {
+        val intent = Intent(this, DashboardActivity::class.java) // Cambié a DashboardActivity
         startActivity(intent)
         finish()  // Finaliza MainActivity para evitar que el usuario regrese
     }

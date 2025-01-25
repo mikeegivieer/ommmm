@@ -59,15 +59,15 @@ class RegisterActivity : AppCompatActivity()  {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                    navigateToMeditationActivity()
+                    navigateToDashboardActivity()  // Cambié a DashboardActivity
                 } else {
                     Toast.makeText(this, "Auto-login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
-    private fun navigateToMeditationActivity() {
-        val intent = Intent(this, MeditationActivity::class.java)
+    private fun navigateToDashboardActivity() {  // Cambié el nombre a DashboardActivity
+        val intent = Intent(this, DashboardActivity::class.java)  // Apunta a DashboardActivity
         startActivity(intent)
         finish()
     }
@@ -181,8 +181,6 @@ fun RegisterForm(onRegister: (String, String, String, String) -> Unit) {
         }
     }
 }
-
-
 
 fun isValidDob(dob: String): Boolean {
     return try {
