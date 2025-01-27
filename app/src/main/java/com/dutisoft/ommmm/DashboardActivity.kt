@@ -44,12 +44,25 @@ class DashboardActivity : ComponentActivity() {
 
 @Composable
 fun DashboardScreen(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(16.dp)) {
-        // Sección de imagen
-        ImageSection()
-
-        // Espacio entre la imagen y el calendario
-        Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Número de racha máxima centrado
+        Text(
+            text = "7", // Reemplaza con el valor dinámico si es necesario
+            style = MaterialTheme.typography.displayLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = "Racha máxima",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         // CalendarView integrado en Compose
         AndroidView(
