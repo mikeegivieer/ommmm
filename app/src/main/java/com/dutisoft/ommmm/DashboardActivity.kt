@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +33,11 @@ class DashboardActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     floatingActionButton = {
-                        FloatingActionButton(onClick = { /* No hace nada aquí */ }) {
+                        FloatingActionButton(
+                            onClick = { /* No hace nada aquí */ },
+                            containerColor = Color(0xFF03DAC5), // teal_200
+                            contentColor = Color(0xFFFFFFFF) // white
+                        ) {
                             Text("+")
                         }
                     }
@@ -59,13 +64,13 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         Text(
             text = "7", // Reemplaza con el valor dinámico si es necesario
             style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.primary,
+            color = Color(0xFF6200EE), // purple_500
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
             text = "Racha máxima",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = Color(0xFF000000), // black
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -85,9 +90,9 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
 
         // Lista de prácticas por día
         Text(
-            text = "Prácticas para $selectedDate",
+            text = "$selectedDate",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = Color(0xFF000000), // black
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -113,6 +118,7 @@ fun PracticeItem(practice: String) {
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF)), // white
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
@@ -130,7 +136,8 @@ fun PracticeItem(practice: String) {
             )
             Text(
                 text = practice,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF3700B3) // purple_700
             )
         }
     }
@@ -138,7 +145,7 @@ fun PracticeItem(practice: String) {
 
 fun generatePracticesForDate(date: String): List<String> {
     return if (date.isNotEmpty()) {
-        listOf("Práctica 1 para $date", "Práctica 2 para $date", "Práctica 3 para $date")
+        listOf("Práctica 1 $date", "Práctica 2 $date", "Práctica 3 $date")
     } else {
         emptyList()
     }
@@ -152,18 +159,18 @@ fun ImageSection() {
         painter = image,
         contentDescription = "Imagen rectangular",
         modifier = Modifier
-            .fillMaxWidth() // Esto hace que la imagen ocupe el ancho completo
-            .height(200.dp) // Esto define una altura fija para la imagen rectangular
-            .padding(8.dp) // Añade un pequeño margen
-            .clip(RoundedCornerShape(8.dp)) // Esto hace que tenga bordes redondeados (opcional)
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(8.dp)
+            .clip(RoundedCornerShape(8.dp))
             .clickable {
                 // No hace nada al hacer clic
             }
     )
 }
 
-@Preview(showBackground = true)
 @Composable
+@Preview(showBackground = true)
 fun DashboardPreview() {
     OmmmmTheme {
         DashboardScreen()
