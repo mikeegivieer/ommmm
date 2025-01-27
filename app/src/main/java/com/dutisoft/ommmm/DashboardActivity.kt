@@ -8,8 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -44,6 +46,9 @@ class DashboardActivity : ComponentActivity() {
 
 @Composable
 fun DashboardScreen(modifier: Modifier = Modifier) {
+    var selectedDate by remember { mutableStateOf("") }
+    val practices = remember(selectedDate) { generatePracticesForDate(selectedDate) }
+
     Column(
         modifier = modifier
             .padding(16.dp)
@@ -69,12 +74,73 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             factory = { context ->
                 CalendarView(context).apply {
                     setOnDateChangeListener { _, year, month, dayOfMonth ->
-                        // Manejo del cambio de fecha si es necesario
+                        selectedDate = "$dayOfMonth/${month + 1}/$year"
                     }
                 }
             },
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Lista de prácticas por día
+        Text(
+            text = "Prácticas para $selectedDate",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(practices) { practice ->
+                PracticeItem(practice)
+            }
+        }
+    }
+}
+
+@Composable
+fun PracticeItem(practice: String) {
+    val icons = listOf(
+        painterResource(android.R.drawable.ic_menu_edit),
+        painterResource(android.R.drawable.ic_menu_agenda),
+        painterResource(android.R.drawable.ic_menu_info_details)
+    )
+    val randomIcon = remember { icons.random() }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = randomIcon,
+                contentDescription = "Ícono de práctica",
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(end = 8.dp)
+            )
+            Text(
+                text = practice,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+fun generatePracticesForDate(date: String): List<String> {
+    return if (date.isNotEmpty()) {
+        listOf("Práctica 1 para $date", "Práctica 2 para $date", "Práctica 3 para $date")
+    } else {
+        emptyList()
     }
 }
 
