@@ -54,55 +54,84 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
     var selectedDate by remember { mutableStateOf("") }
     val practices = remember(selectedDate) { generatePracticesForDate(selectedDate) }
 
-    Column(
+    Box(
         modifier = modifier
+            .fillMaxSize()
             .padding(16.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Número de racha máxima centrado
-        Text(
-            text = "7", // Reemplaza con el valor dinámico si es necesario
-            style = MaterialTheme.typography.displayLarge,
-            color = Color(0xFF6200EE), // purple_500
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Text(
-            text = "Racha máxima",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF000000), // black
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Número de racha máxima centrado
+            Text(
+                text = "7", // Reemplaza con el valor dinámico si es necesario
+                style = MaterialTheme.typography.displayLarge,
+                color = Color(0xFF6200EE), // purple_500
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text = "Racha máxima",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF000000), // black
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        // CalendarView integrado en Compose
-        AndroidView(
-            factory = { context ->
-                CalendarView(context).apply {
-                    setOnDateChangeListener { _, year, month, dayOfMonth ->
-                        selectedDate = "$dayOfMonth/${month + 1}/$year"
+            // CalendarView integrado en Compose
+            AndroidView(
+                factory = { context ->
+                    CalendarView(context).apply {
+                        setOnDateChangeListener { _, year, month, dayOfMonth ->
+                            selectedDate = "$dayOfMonth/${month + 1}/$year"
+                        }
                     }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Lista de prácticas por día
+            Text(
+                text = "$selectedDate",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFF000000), // black
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(practices) { practice ->
+                    PracticeItem(practice)
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Lista de prácticas por día
-        Text(
-            text = "$selectedDate",
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF000000), // black
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(practices) { practice ->
-                PracticeItem(practice)
             }
         }
+
+        // Texto de "Cerrar sesión" alineado al fondo de la pantalla
+        Text(
+            text = "Cerrar sesión",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Red,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .clickable {
+                    handleLogout()
+                }
+                .padding(bottom = 16.dp) // Espaciado desde el borde inferior
+        )
     }
 }
+
+fun handleLogout() {
+    val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+    auth.signOut()
+
+    // Aquí puedes navegar a la pantalla de inicio de sesión o mostrar un mensaje
+    println("Sesión cerrada exitosamente") // Cambia esto por navegación si es necesario
+}
+
+
 
 @Composable
 fun PracticeItem(practice: String) {
