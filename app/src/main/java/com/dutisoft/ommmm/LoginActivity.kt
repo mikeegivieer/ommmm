@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity()  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+         //Todo Crear un loader de inicio de sesion
         // Inicializa FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance()
 

@@ -1,5 +1,6 @@
 package com.dutisoft.ommmm
 
+import android.app.Activity
 import android.os.Bundle
 import android.widget.CalendarView
 import androidx.activity.ComponentActivity
@@ -22,6 +23,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import com.dutisoft.ommmm.ui.theme.OmmmmTheme
 
 class DashboardActivity : ComponentActivity() {
@@ -127,9 +129,13 @@ fun handleLogout() {
     val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
     auth.signOut()
 
-    // Aquí puedes navegar a la pantalla de inicio de sesión o mostrar un mensaje
+    // Cerrar la actividad actual y salir de la app
     println("Sesión cerrada exitosamente") // Cambia esto por navegación si es necesario
+    // Asegúrate de que esta función se ejecute desde una actividad o contexto adecuado
+    val activity = (LocalContext as? Activity)
+    activity?.finish()
 }
+
 
 
 
