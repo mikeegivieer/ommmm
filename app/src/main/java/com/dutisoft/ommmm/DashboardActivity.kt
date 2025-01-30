@@ -1,6 +1,8 @@
 package com.dutisoft.ommmm
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.CalendarView
 import androidx.activity.ComponentActivity
@@ -15,15 +17,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import com.dutisoft.ommmm.ui.theme.OmmmmTheme
 
 class DashboardActivity : ComponentActivity() {
@@ -35,8 +37,13 @@ class DashboardActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     floatingActionButton = {
+                        val context = LocalContext.current
                         FloatingActionButton(
-                            onClick = { /* No hace nada aquí */ },
+                            onClick = {
+                                // Navegar a MeditationActivity al hacer clic
+                                val intent = Intent(context, MeditationActivity::class.java)
+                                context.startActivity(intent)
+                            },
                             containerColor = Color(0xFF03DAC5), // teal_200
                             contentColor = Color(0xFFFFFFFF) // white
                         ) {
@@ -55,6 +62,7 @@ class DashboardActivity : ComponentActivity() {
 fun DashboardScreen(modifier: Modifier = Modifier) {
     var selectedDate by remember { mutableStateOf("") }
     val practices = remember(selectedDate) { generatePracticesForDate(selectedDate) }
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
@@ -118,26 +126,24 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .clickable {
-                    handleLogout()
+                    handleLogout(context)
                 }
                 .padding(bottom = 16.dp) // Espaciado desde el borde inferior
         )
     }
 }
 
-fun handleLogout() {
+// Ahora `handleLogout` recibe el contexto como parámetro
+fun handleLogout(context: Context) {
     val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
     auth.signOut()
 
     // Cerrar la actividad actual y salir de la app
     println("Sesión cerrada exitosamente") // Cambia esto por navegación si es necesario
-    // Asegúrate de que esta función se ejecute desde una actividad o contexto adecuado
-    val activity = (LocalContext as? Activity)
-    activity?.finish()
+    if (context is Activity) {
+        context.finish()
+    }
 }
-
-
-
 
 @Composable
 fun PracticeItem(practice: String) {
