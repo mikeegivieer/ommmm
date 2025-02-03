@@ -1,6 +1,7 @@
 package com.dutisoft.ommmm
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -38,7 +39,6 @@ fun MeditationScreen() {
     val context = LocalContext.current
     val sharedPreferences = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
 
-    // Cargar tiempo guardado en SharedPreferences (si no hay, usar 1 min por defecto)
     var timeRemaining by remember {
         mutableStateOf(sharedPreferences.getInt("selected_minutes", 1) * 60000L)
     }
@@ -53,6 +53,13 @@ fun MeditationScreen() {
         mediaPlayer.setOnCompletionListener { mediaPlayer.release() }
     }
 
+    fun navigateToDashboard() {
+        val intent = Intent(context, DashboardActivity::class.java).apply {
+            putExtra("celebration_type", 1)
+        }
+        context.startActivity(intent)
+    }
+
     fun startTimer() {
         countDownTimer?.cancel()
         countDownTimer = object : CountDownTimer(timeRemaining, 1000) {
@@ -63,6 +70,7 @@ fun MeditationScreen() {
             override fun onFinish() {
                 timeRemaining = 0
                 isTimerRunning = false
+                navigateToDashboard()
             }
         }.start()
         isTimerRunning = true
@@ -114,8 +122,6 @@ fun MeditationScreen() {
                     onConfirm = { selectedMinutes ->
                         timeRemaining = selectedMinutes * 60 * 1000L
                         showTimePicker = false
-
-                        // Guardar en SharedPreferences
                         sharedPreferences.edit().putInt("selected_minutes", selectedMinutes).apply()
                     }
                 )
