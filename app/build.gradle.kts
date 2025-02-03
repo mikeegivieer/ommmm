@@ -44,6 +44,8 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation ("androidx.compose.material:material-icons-core:1.5.4") // Para íconos básicos
+    implementation ("androidx.compose.material:material-icons-extended:1.5.4")
     implementation(libs.androidx.core.ktx)
     implementation ("com.airbnb.android:lottie-compose:5.0.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)

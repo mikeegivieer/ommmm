@@ -3,17 +3,20 @@ package com.dutisoft.ommmm
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dutisoft.ommmm.ui.theme.OmmmmTheme
 
@@ -21,7 +24,9 @@ class MeditationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MeditationScreen()
+            OmmmmTheme {
+                MeditationScreen()
+            }
         }
     }
 }
@@ -30,26 +35,17 @@ class MeditationActivity : ComponentActivity() {
 fun MeditationScreen() {
     var timeRemaining by remember { mutableStateOf(60000L) }  // 1 minuto en milisegundos
     var isTimerRunning by remember { mutableStateOf(false) }
-    var lastClickTime by remember { mutableStateOf(0L) }
-    var isTimeUp by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-    val doubleClickThreshold = 800L
     val context = LocalContext.current
 
-    var countDownTimer by remember {
-        mutableStateOf<CountDownTimer?>(null)
-    }
+    var countDownTimer by remember { mutableStateOf<CountDownTimer?>(null) }
 
-    // Reproducir el sonido al iniciar la práctica
     fun playSound() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.tibetan_bowl)
         mediaPlayer.start()
-        mediaPlayer.setOnCompletionListener {
-            mediaPlayer.release()  // Libera los recursos cuando termine la reproducción
-        }
+        mediaPlayer.setOnCompletionListener { mediaPlayer.release() }
     }
 
-    // Función para iniciar el temporizador
     fun startTimer() {
         countDownTimer?.cancel()
         countDownTimer = object : CountDownTimer(timeRemaining, 1000) {
@@ -60,35 +56,25 @@ fun MeditationScreen() {
             override fun onFinish() {
                 timeRemaining = 0
                 isTimerRunning = false
-                isTimeUp = true
             }
         }.start()
         isTimerRunning = true
     }
 
-    // Función para pausar el temporizador
     fun pauseTimer() {
         countDownTimer?.cancel()
         isTimerRunning = false
     }
 
-    // Maneja el clic para iniciar o pausar el temporizador
     fun handleClick() {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastClickTime < doubleClickThreshold) {
-            if (isTimerRunning) {
-                pauseTimer()
-            } else {
-                startTimer()
-                playSound()  // Reproducir el sonido al iniciar
-            }
+        if (isTimerRunning) {
+            pauseTimer()
         } else {
-            Toast.makeText(context, "Toca dos veces para iniciar/pausar", Toast.LENGTH_SHORT).show()
+            startTimer()
+            playSound()
         }
-        lastClickTime = currentTime
     }
 
-    // Formato de tiempo en minutos:segundos
     fun formatTime(millis: Long): String {
         val seconds = (millis / 1000).toInt()
         val minutes = seconds / 60
@@ -96,7 +82,6 @@ fun MeditationScreen() {
         return String.format("%02d:%02d", minutes, remainingSeconds)
     }
 
-    // Interfaz de usuario
     Box(modifier = Modifier.fillMaxSize().clickable { handleClick() }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,9 +91,13 @@ fun MeditationScreen() {
             Text(
                 text = formatTime(timeRemaining),
                 fontSize = 50.sp,
-                modifier = Modifier.clickable {
-                    if (!isTimerRunning) showTimePicker = true
-                }
+                modifier = Modifier.clickable { if (!isTimerRunning) showTimePicker = true }
+            )
+
+            Icon(
+                imageVector = if (isTimerRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
+                contentDescription = stringResource(if (isTimerRunning) R.string.pause else R.string.play),
+                modifier = Modifier.size(48.dp).padding(8.dp)
             )
 
             if (showTimePicker) {
@@ -135,10 +124,10 @@ fun TimePickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Selecciona el tiempo") },
+        title = { Text(stringResource(R.string.select_time)) },
         text = {
             Column {
-                Text("Elige minutos (máx 60):")
+                Text(stringResource(R.string.select_time))
                 Slider(
                     value = selectedMinutes.toFloat(),
                     onValueChange = { selectedMinutes = it.toInt() },
@@ -150,21 +139,13 @@ fun TimePickerDialog(
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(selectedMinutes) }) {
-                Text("Aceptar")
+                Text(stringResource(R.string.accept))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    OmmmmTheme {
-        MeditationScreen()
-    }
 }
