@@ -1,5 +1,7 @@
 package com.dutisoft.ommmm
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -33,11 +35,16 @@ class MeditationActivity : ComponentActivity() {
 
 @Composable
 fun MeditationScreen() {
-    var timeRemaining by remember { mutableStateOf(60000L) }  // 1 minuto en milisegundos
+    val context = LocalContext.current
+    val sharedPreferences = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
+
+    // Cargar tiempo guardado en SharedPreferences (si no hay, usar 1 min por defecto)
+    var timeRemaining by remember {
+        mutableStateOf(sharedPreferences.getInt("selected_minutes", 1) * 60000L)
+    }
+
     var isTimerRunning by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-
     var countDownTimer by remember { mutableStateOf<CountDownTimer?>(null) }
 
     fun playSound() {
@@ -107,6 +114,9 @@ fun MeditationScreen() {
                     onConfirm = { selectedMinutes ->
                         timeRemaining = selectedMinutes * 60 * 1000L
                         showTimePicker = false
+
+                        // Guardar en SharedPreferences
+                        sharedPreferences.edit().putInt("selected_minutes", selectedMinutes).apply()
                     }
                 )
             }
